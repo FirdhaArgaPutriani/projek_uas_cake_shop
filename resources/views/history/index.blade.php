@@ -2,9 +2,6 @@
 @section('content')
 <div class="container">
     <div class="row">
-        <div class="col-md-12">
-            <a href="{{ url('home') }}" class="btn btn-primary"><i class="fa fa-arrow-left"></i> Kembali</a>
-        </div>
         <div class="col-md-12 mt-2">
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb">
@@ -29,20 +26,20 @@
                         </thead>
                         <tbody>
                             <?php $no = 1; ?>
-                            @foreach($pesanans as $pesanan)
+                            @foreach($transactions as $transaction)
                             <tr>
                                 <td>{{ $no++ }}</td>
-                                <td>{{ $pesanan->tanggal }}</td>
+                                <td>{{ $transaction -> tanggal }}</td>
                                 <td>
-                                    @if($pesanan->status == 1)
-                                    Sudah Pesan & Belum dibayar
+                                    @if($transaction -> status == 1)
+                                        Sudah Pesan & Belum dibayar
                                     @else
-                                    Sudah dibayar 
+                                        Sudah dibayar 
                                     @endif
                                 </td>
-                                <td>Rp. {{ number_format($pesanan->jumlah_harga+$pesanan->kode) }}</td>
+                                <td>Rp. {{ number_format($transaction -> jumlah_harga + $transaction -> kode) }}</td>
                                 <td>
-                                    <a href="{{ url('history') }}/{{ $pesanan->id }}" class="btn btn-primary"><i class="fa fa-info"></i> Detail</a>
+                                    <a href="{{ url('history') }}/{{ $transaction -> id }}" class="btn btn-primary"><i class="fa fa-info"></i> Detail</a>
                                 </td>
                             </tr>
                             @endforeach

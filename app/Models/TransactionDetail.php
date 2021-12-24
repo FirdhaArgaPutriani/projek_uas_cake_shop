@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class TransactionDetail extends Model
 {
-    use HasFactory;
+    protected $fillable = ['cake_id', 'transaction_id', 'jumlah', 'jumlah_harga'];
 
     public function cake() {
 	    return $this->belongsTo('App\Models\Cake','cake_id', 'id');

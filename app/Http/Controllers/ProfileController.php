@@ -8,23 +8,19 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Alert;
 
-class ProfileController extends Controller
-{
-    public function __construct()
-    {
+class ProfileController extends Controller {
+    public function __construct() {
         $this->middleware('auth');
     }
 
-    public function index()
-    {
+    public function index() {
     	$user = User::where('id', Auth::user()->id)->first();
 
     	return view('profile.index', compact('user'));
     }
 
-    public function update(Request $request)
-    {
-    	 $this->validate($request, [
+    public function update(Request $request) {
+    	$this->validate($request, [
             'password'  =>'confirmed',
         ]);
 
@@ -35,14 +31,12 @@ class ProfileController extends Controller
     	$user->alamat = $request->alamat;
         $user->phone = $request->phone;
 
-    	if(!empty($request->password))
-    	{
+    	if(!empty($request->password)){
     		$user->password = Hash::make($request->password);
     	}
     	
     	$user->update();
-
-    	Alert::success('User Sukses diupdate', 'Success');
+        
     	return redirect('profile');
     }
 }

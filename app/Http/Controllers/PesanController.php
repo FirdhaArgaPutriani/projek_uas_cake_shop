@@ -2,54 +2,49 @@
 
 namespace App\Http\Controllers;
 
+use Carbon\Carbon;
 use App\Models\User;
 use App\Models\Cake;
 use App\Models\Transaction;
 use App\Models\TransactionDetail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Alert;
 
 class PesanController extends Controller
 {
-    public function __construct()
-    {
+    public function __construct() {
         $this->middleware('auth');
     }
 
-    public function index($id)
-    {
+    public function index($id) {
         $cake = Cake::where('id', $id)->first();
-
         return view('pesan.index', compact('cake'));
     }
 
-    public function pesan(Request $request, $id)
-    {   
+    public function pesan(Request $request, $id) {   
         $cake = Cake::where('id', $id)->first();
         $tanggal = Carbon::now();
 
         //validasi apakah melebihi stok
         if($request->jumlah_transaction > $cake->stok)
         {
-            return redirect('transaction/'.$id);
+            return redirect('pesan/'.$id);
         }
 
         //cek validasi
         $cek_transaction = Transaction::where('user_id', Auth::user()->id)->where('status',0)->first();
         //simpan ke database pesanan
-        if(empty($cek_pesanan))
+        if(empty($cek_transaction))
         {
             $transaction = new Transaction;
-            $transaction->user_id = Auth::user()->id;
-            $transaction->tanggal = $tanggal;
-            $transaction->status = 0;
-            $transaction->jumlah_harga = 0;
-            $transaction->kode = mt_rand(100, 999);
-            $transaction->save();
+            $transaction-> user_id = Auth::user()->id;
+            $transaction-> tanggal = $tanggal;
+            $transaction-> status = 0;
+            $transaction-> jumlah_harga = 0;
+            $transaction-> kode = mt_rand(100, 999);
+            $transaction-> save();
         }
         
-
         //simpan ke database pesanan detail
         $transaction_baru = Transaction::where('user_id', Auth::user()->id)->where('status',0)->first();
 
@@ -58,36 +53,36 @@ class PesanController extends Controller
         if(empty($cek_transaction_detail))
         {
             $transaction_detail = new TransactionDetail;
-            $transaction_detail->cake_id = $cake->id;
-            $transaction_detail->transaction_id = $transaction_baru->id;
-            $transaction_detail->jumlah = $request->jumlah_pesan;
-            $transaction_detail->jumlah_harga = $cake->harga*$request->jumlah_pesan;
-            $transaction_detail->save();
-        }else 
-        {
-            $transaction_detail = TransactionDetail::where('cake_id', $cake->id)-> where('transaction_id', $transaction_baru->id)->first();
+            $transaction_detail-> cake_id           = $cake->id;
+            $transaction_detail-> transaction_id    = $transaction_baru->id;
+            $transaction_detail-> jumlah            = $request->jumlah_pesan;
+            $transaction_detail-> jumlah_harga      = $cake->harga * $request->jumlah_pesan;
+            $transaction_detail-> save();
+        } else {
+            $transaction_detail = TransactionDetail::where('cake_id', $cake->id)-> where('transaction_id', $transaction_baru -> id) -> first();
 
             $transaction_detail->jumlah = $transaction_detail-> jumlah + $request-> jumlah_pesan;
 
             //harga sekarang
-            $harga_transaction_detail_baru = $cake->harga*$request->jumlah_pesan;
-            $transaction_detail->jumlah_harga = $transaction_detail->jumlah_harga+$harga_transaction_detail_baru;
-            $transaction_detail->update();
+            $harga_transaction_detail_baru      = $cake -> harga * $request -> jumlah_pesan;
+            $transaction_detail -> jumlah_harga  = $transaction_detail -> jumlah_harga + $harga_transaction_detail_baru;
+            $transaction_detail -> update();
         }
 
         //jumlah total
-        $transaction = Transaction::where('user_id', Auth::user()->id)->where('status',0)->first();
-        $transaction->jumlah_harga = $transaction->jumlah_harga+$cake->harga*$request->jumlah_pesan;
-        $transaction->update();
+        $transaction = Transaction::where('user_id', Auth::user() -> id) -> where('status',0) -> first();
+        $transaction -> jumlah_harga = $transaction -> jumlah_harga + $cake -> harga * $request -> jumlah_pesan;
+        $transaction -> update();
         
-        Alert::success('Pesanan Sukses Masuk Keranjang', 'Success');
-        return redirect('check-out');
-
+        return redirect('/check-out');
     }
 
     public function check_out()
     {
         $transaction = Transaction::where('user_id', Auth::user()->id)->where('status',0)->first();
+        
+        $transaction_details = [];
+
         if(!empty($transaction))
         {
             $transaction_details = TransactionDetail::where('transaction_id', $transaction->id)->get();
@@ -107,28 +102,25 @@ class PesanController extends Controller
 
         $transaction_detail->delete();
 
-        Alert::error('Pesanan Sukses Dihapus', 'Hapus');
-        return redirect('check-out');
+        return redirect('/check-out');
     }
 
     public function konfirmasi()
     {
         $user = User::where('id', Auth::user()->id)->first();
 
-        if(empty($user->alamat))
+        if(empty($user -> alamat))
         {
-            Alert::error('Identitasi Harap dilengkapi', 'Error');
             return redirect('profile');
         }
 
-        if(empty($user->nohp))
+        if(empty($user -> phone))
         {
-            Alert::error('Identitasi Harap dilengkapi', 'Error');
             return redirect('profile');
         }
 
         $transaction = Transaction::where('user_id', Auth::user()->id)->where('status',0)->first();
-        $transaction_id = $transaction->id;
+        $transaction_id = $transaction -> id;
         $transaction->status = 1;
         $transaction->update();
 
@@ -139,10 +131,6 @@ class PesanController extends Controller
             $cake->update();
         }
 
-
-
-        Alert::success('Pesanan Sukses Check Out Silahkan Lanjutkan Proses Pembayaran', 'Success');
         return redirect('history/'.$transaction_id);
-
     }
 }

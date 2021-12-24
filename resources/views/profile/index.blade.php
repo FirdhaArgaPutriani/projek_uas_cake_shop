@@ -2,9 +2,6 @@
 @section('content')
 <div class="container">
     <div class="row">
-        <div class="col-md-12">
-            <a href="{{ url('home') }}" class="btn btn-primary"><i class="fa fa-arrow-left"></i> Kembali</a>
-        </div>
         <div class="col-md-12 mt-2">
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb">
@@ -30,9 +27,9 @@
                                 <td>{{ $user->email }}</td>
                             </tr>
                             <tr>
-                                <td>No HP</td>
+                                <td>Phone</td>
                                 <td>:</td>
-                                <td>{{ $user->nohp }}</td>
+                                <td>{{ $user->phone }}</td>
                             </tr>
                             <tr>
                                 <td>Alamat</td>
@@ -80,12 +77,12 @@
                         </div>
 
                         <div class="form-group row">
-                            <label for="nohp" class="col-md-2 col-form-label text-md-right">No. HP</label>
+                            <label for="phone" class="col-md-2 col-form-label text-md-right">Phone</label>
 
                             <div class="col-md-6">
-                                <input id="nohp" type="text" class="form-control @error('nohp') is-invalid @enderror" name="nohp" value="{{ $user->nohp }}" required autocomplete="nohp" autofocus>
+                                <input id="phone" type="text" class="form-control @error('phone') is-invalid @enderror" name="phone" value="{{ $user->phone }}" required autocomplete="phone" autofocus>
 
-                                @error('nohp')
+                                @error('phone')
                                     <span class="invalid-feedback" role="alert">
                                         <strong>{{ $message }}</strong>
                                     </span>

@@ -3,9 +3,13 @@
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\HistoryController;
-use App\Http\Controllers\PesananController;
+use App\Http\Controllers\PesanController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ProductController;
+use App\Http\Controllers\ContactUsController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\CakeController;
+use App\Http\Controllers\TransactionController;
 
 /*
 |--------------------------------------------------------------------------
@@ -26,15 +30,26 @@ Auth::routes();
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
-Route::get('pesan/{id}', [App\Http\Controllers\PesananController::class, 'index']);
-Route::post('pesan/{id}', [App\Http\Controllers\PesananController::class, 'pesan']);
-Route::get('/check-out', [App\Http\Controllers\PesananController::class, 'check_out']);
-Route::delete('/check-out/{id}', [App\Http\Controllers\PesananController::class, 'delete']);
+Route::get('pesan/{id}', [PesanController::class, 'index']);
+Route::post('pesan/{id}', [PesanController::class, 'pesan']);
 
-Route::get('/konfirmasi-check-out', [App\Http\Controllers\PesananController::class, 'konfirmasi']);
+Route::get('/check-out', [PesanController::class, 'check_out']);
+Route::delete('/check-out/{id}', [PesanController::class, 'delete']);
 
-Route::get('profile', [App\Http\Controllers\ProfileController::class, 'index']);
-Route::post('/profile', [App\Http\Controllers\ProfileController::class, 'update']);
+Route::get('/konfirmasi-check-out', [PesanController::class, 'konfirmasi']);
 
-Route::get('history', [App\Http\Controllers\HistoryController::class, 'index']);
-Route::get('/history/{id}', [App\Http\Controllers\ProfileController::class, 'detail']);
+Route::resource('profile', ProfileController::class);
+Route::post('/profile', [ProfileController::class, 'update']);
+
+Route::get('history', [HistoryController::class, 'index']);
+Route::get('/history/{id}', [HistoryController::class, 'detail']);
+
+Route::resource('products', ProductController::class);
+
+Route::resource('ContactUs', ContactUsController::class);
+
+Route::resource('users', UserController::class);
+
+Route::resource('cakes', CakeController::class);
+
+Route::resource('transactions', TransactionController::class);
